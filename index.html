@@ -5,22 +5,25 @@
   <style>
     body { font-family: Arial; text-align: center; }
     #media-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    img { max-height: 200px; border: 1px solid #ddd; }
+    img { max-height: 200px; }
   </style>
 </head>
 <body>
   <h1>BrightSign Media Files</h1>
   <div id="media-container">
-    <!-- Hardcode a test image to verify path -->
+    <!-- Hardcoded test image -->
     <img src="media/picture1.gif" alt="Test GIF">
   </div>
 
   <script>
-    // Debug: List all files in /media/
+    // Debug: Log if media/ exists
     fetch('media/')
-      .then(r => r.text())
-      .then(html => console.log("Directory listing:", html))
-      .catch(e => console.error("Failed to fetch /media/:", e));
+      .then(response => {
+        if (!response.ok) throw new Error(`Failed to fetch media/: ${response.status}`);
+        return response.text();
+      })
+      .then(html => console.log("Media folder contents:", html))
+      .catch(error => console.error("Error:", error));
   </script>
 </body>
 </html>
