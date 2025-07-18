@@ -1,34 +1,26 @@
-<script>
-  const mediaFolder = 'media/';
-  const container = document.getElementById('media-container');
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BrightSign Media</title>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    #media-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    img { max-height: 200px; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <h1>BrightSign Media Files</h1>
+  <div id="media-container">
+    <!-- Hardcode a test image to verify path -->
+    <img src="media/picture1.gif" alt="Test GIF">
+  </div>
 
-  fetch(mediaFolder)
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      return response.text();
-    })
-    .then(html => {
-      console.log("Fetched HTML:", html); // Debug: Check if HTML is loaded
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const links = Array.from(doc.querySelectorAll('a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"], a[href$=".gif"]'));
-      
-      console.log("Found links:", links); // Debug: List detected files
-      if (links.length === 0) {
-        container.innerHTML = "<p>No images/GIFs found in 'media/' folder.</p>";
-        return;
-      }
-
-      links.forEach(link => {
-        const file = link.href.split('/').pop();
-        const img = document.createElement('img');
-        img.src = `${mediaFolder}${file}`;
-        img.style.maxWidth = '200px';
-        container.appendChild(img);
-      });
-    })
-    .catch(error => {
-      console.error("Fetch error:", error);
-      container.innerHTML = `<p>Error loading media. Check console (F12 > Console).</p>`;
-    });
-</script>
+  <script>
+    // Debug: List all files in /media/
+    fetch('media/')
+      .then(r => r.text())
+      .then(html => console.log("Directory listing:", html))
+      .catch(e => console.error("Failed to fetch /media/:", e));
+  </script>
+</body>
+</html>
