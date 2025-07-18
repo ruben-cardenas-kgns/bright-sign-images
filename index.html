@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BrightSign Media Gallery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .media-item {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    .media-item img {
+      max-width: 100%;
+      height: auto;
+    }
+    .filename {
+      margin-top: 8px;
+      font-size: 12px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <h1>BrightSign Media Gallery</h1>
+  <div id="media-container" class="media-grid"></div>
+
+  <script>
+    // Automatically load all images/GIFs in this directory
+    document.addEventListener('DOMContentLoaded', function() {
+      const mediaContainer = document.getElementById('media-container');
+      const currentDir = window.location.pathname.split('/').slice(0, -1).join('/') || '.';
+
+      fetch(currentDir)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const links = doc.querySelectorAll('a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"], a[href$=".gif"]');
+          
+          links.forEach(link => {
+            const filename = link.getAttribute('href');
+            if (!filename.startsWith('http')) { // Skip external links
+              const mediaItem = document.createElement('div');
+              mediaItem.className = 'media-item';
+              
+              const mediaElement = document.createElement('img');
+              mediaElement.src = filename;
+              mediaElement.loading = 'lazy'; // Optimize loading
+              
+              const fileNameLabel = document.createElement('div');
+              fileNameLabel.className = 'filename';
+              fileNameLabel.textContent = filename;
+              
+              mediaItem.appendChild(mediaElement);
+              mediaItem.appendChild(fileNameLabel);
+              mediaContainer.appendChild(mediaItem);
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error loading media:', error);
+          mediaContainer.innerHTML = '<p>Error loading files. Refresh or check console.</p>';
+        });
+    });
+  </script>
+</body>
+</html>
