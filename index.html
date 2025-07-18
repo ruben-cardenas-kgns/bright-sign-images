@@ -64,6 +64,7 @@
 
       let mediaFiles = [];
       let currentIndex = 0;
+      let slideshowInterval = null;
 
       function updateSlideshow() {
         if (mediaFiles.length === 0) return;
@@ -82,6 +83,12 @@
         updateSlideshow();
       }
 
+      // Auto-advance every 20 seconds
+      function startAutoAdvance() {
+        if (slideshowInterval) clearInterval(slideshowInterval);
+        slideshowInterval = setInterval(nextSlide, 20000);
+      }
+
       fetch(mediaFolder + 'media.json')
         .then(res => {
           if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
@@ -94,17 +101,22 @@
           }
           mediaFiles = files;
           updateSlideshow();
+          startAutoAdvance(); // start the timer once images are loaded
         })
         .catch(err => {
           console.error('Error loading media:', err);
           imageElement.alt = 'Error loading media.';
         });
 
-      nextBtn.addEventListener('click', nextSlide);
-      prevBtn.addEventListener('click', prevSlide);
+      nextBtn.addEventListener('click', () => {
+        nextSlide();
+        startAutoAdvance(); // reset timer
+      });
 
-      // Optional: Auto-advance every 5 seconds
-      // setInterval(nextSlide, 5000);
+      prevBtn.addEventListener('click', () => {
+        prevSlide();
+        startAutoAdvance(); // reset timer
+      });
     });
   </script>
 </body>
