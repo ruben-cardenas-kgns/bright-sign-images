@@ -2,84 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BrightSign Media Slideshow</title>
+  <title>My KGNS‑Style Front Page</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background-color: black;
-      height: 100%;
-      overflow: hidden;
-    }
-
     body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background: #004b87;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav ul {
+      list-style: none;
+      margin: auto;
+      padding: 0;
       display: flex;
-      align-items: center;
       justify-content: center;
+      gap: 15px;
     }
-
-    .slideshow-container {
-      width: 100vw;
-      height: 100vh;
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
     }
-
-    img {
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card img, .card video, .card .slideshow {
       width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
+      height: 180px;
+      object-fit: cover;
+      background: #000;
+    }
+    .card .content {
+      padding: 10px;
+    }
+    .slideshow img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
-  <div class="slideshow-container">
-    <img id="slideshow-image" src="" alt="Media Slideshow" />
-  </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const mediaFolder = 'media/';
-      const imageElement = document.getElementById('slideshow-image');
-
-      let mediaFiles = [];
-      let currentIndex = 0;
-      let slideshowInterval = null;
-
-      function updateSlideshow() {
-        if (mediaFiles.length === 0) return;
-        const currentFile = mediaFiles[currentIndex];
-        imageElement.src = mediaFolder + encodeURIComponent(currentFile);
-      }
-
-      function nextSlide() {
-        currentIndex = (currentIndex + 1) % mediaFiles.length;
-        updateSlideshow();
-      }
-
-      function startAutoAdvance() {
-        if (slideshowInterval) clearInterval(slideshowInterval);
-        slideshowInterval = setInterval(nextSlide, 20000); // 20 seconds
-      }
-
-      fetch(mediaFolder + 'media.json')
-        .then(res => {
-          if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-          return res.json();
-        })
-        .then(files => {
-          if (!Array.isArray(files) || files.length === 0) {
-            imageElement.alt = 'No media files found.';
-            return;
-          }
-          mediaFiles = files;
-          updateSlideshow();
-          startAutoAdvance();
-        })
-        .catch(err => {
-          console.error('Error loading media:', err);
-          imageElement.alt = 'Error loading media.';
-        });
-    });
-  </script>
-</body>
-</html>
+  <header>
+    <h1>My News Site</h1>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">News</a></li>
+        <li><a href="#">Weather</a></li>
+        <li><a href="#">Sports</a></li>
+        <li><a href="#">Live</a></li>
+      </
