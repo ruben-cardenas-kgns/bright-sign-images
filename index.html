@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BrightSign Media Gallery</title>
+  <title>BrightSign Media Slideshow</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 1200px;
+      max-width: 800px;
       margin: 0 auto;
       padding: 20px;
       text-align: center;
@@ -14,78 +14,97 @@
     h1 {
       color: #333;
     }
-    .media-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
+    .slideshow-container {
+      position: relative;
+      margin-top: 30px;
     }
-    .media-item {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      overflow: hidden;
-      transition: transform 0.2s;
-    }
-    .media-item:hover {
-      transform: scale(1.02);
-    }
-    .media-item img {
-      width: 100%;
-      height: auto;
-      display: block;
+    img {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
     .filename {
-      padding: 8px;
-      font-size: 12px;
-      background: #f5f5f5;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
       word-break: break-word;
+    }
+    .nav-buttons {
+      margin-top: 20px;
+    }
+    .nav-buttons button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>BrightSign Media Gallery</h1>
-  <div id="media-container" class="media-grid"></div>
+  <h1>BrightSign Media Slideshow</h1>
+
+  <div class="slideshow-container">
+    <img id="slideshow-image" src="" alt="Media" />
+    <div class="filename" id="filename"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button id="prev-btn">⟵ Previous</button>
+    <button id="next-btn">Next ⟶</button>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const mediaContainer = document.getElementById('media-container');
       const mediaFolder = 'media/';
+      const imageElement = document.getElementById('slideshow-image');
+      const filenameElement = document.getElementById('filename');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      let mediaFiles = [];
+      let currentIndex = 0;
+
+      function updateSlideshow() {
+        if (mediaFiles.length === 0) return;
+        const currentFile = mediaFiles[currentIndex];
+        imageElement.src = mediaFolder + encodeURIComponent(currentFile);
+        filenameElement.textContent = currentFile;
+      }
+
+      function nextSlide() {
+        currentIndex = (currentIndex + 1) % mediaFiles.length;
+        updateSlideshow();
+      }
+
+      function prevSlide() {
+        currentIndex = (currentIndex - 1 + mediaFiles.length) % mediaFiles.length;
+        updateSlideshow();
+      }
 
       fetch(mediaFolder + 'media.json')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json();
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+          return res.json();
         })
-        .then(mediaFiles => {
-          if (!Array.isArray(mediaFiles) || mediaFiles.length === 0) {
-            mediaContainer.innerHTML = '<p>No media files found.</p>';
+        .then(files => {
+          if (!Array.isArray(files) || files.length === 0) {
+            imageElement.alt = 'No media files found.';
             return;
           }
-
-          mediaFiles.forEach(file => {
-            const mediaItem = document.createElement('div');
-            mediaItem.className = 'media-item';
-
-            const img = document.createElement('img');
-            img.src = mediaFolder + encodeURIComponent(file);
-            img.alt = file;
-            img.loading = 'lazy';
-
-            const fileNameLabel = document.createElement('div');
-            fileNameLabel.className = 'filename';
-            fileNameLabel.textContent = file;
-
-            mediaItem.appendChild(img);
-            mediaItem.appendChild(fileNameLabel);
-            mediaContainer.appendChild(mediaItem);
-          });
+          mediaFiles = files;
+          updateSlideshow();
         })
-        .catch(error => {
-          console.error('Error loading media:', error);
-          mediaContainer.innerHTML = '<p>Error loading media files. Check console for details.</p>';
+        .catch(err => {
+          console.error('Error loading media:', err);
+          imageElement.alt = 'Error loading media.';
         });
+
+      nextBtn.addEventListener('click', nextSlide);
+      prevBtn.addEventListener('click', prevSlide);
+
+      // Optional: Auto-advance every 5 seconds
+      // setInterval(nextSlide, 5000);
     });
   </script>
 </body>
