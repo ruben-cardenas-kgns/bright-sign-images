@@ -6,13 +6,15 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 800px;
+      max-width: 1000px;
       margin: 0 auto;
       padding: 20px;
       text-align: center;
+      background-color: #000;
     }
     h1 {
-      color: #333;
+      color: #fff;
+      margin-bottom: 30px;
     }
     .slideshow-container {
       position: relative;
@@ -20,24 +22,9 @@
     }
     img {
       max-width: 100%;
-      max-height: 500px;
+      max-height: 90vh;
       border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    .filename {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #666;
-      word-break: break-word;
-    }
-    .nav-buttons {
-      margin-top: 20px;
-    }
-    .nav-buttons button {
-      padding: 10px 20px;
-      margin: 0 10px;
-      font-size: 16px;
-      cursor: pointer;
+      border: 2px solid #333;
     }
   </style>
 </head>
@@ -45,22 +32,13 @@
   <h1>BrightSign Media Slideshow</h1>
 
   <div class="slideshow-container">
-    <img id="slideshow-image" src="" alt="Media" />
-    <div class="filename" id="filename"></div>
-  </div>
-
-  <div class="nav-buttons">
-    <button id="prev-btn">⟵ Previous</button>
-    <button id="next-btn">Next ⟶</button>
+    <img id="slideshow-image" src="" alt="Media Slideshow" />
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const mediaFolder = 'media/';
       const imageElement = document.getElementById('slideshow-image');
-      const filenameElement = document.getElementById('filename');
-      const prevBtn = document.getElementById('prev-btn');
-      const nextBtn = document.getElementById('next-btn');
 
       let mediaFiles = [];
       let currentIndex = 0;
@@ -70,7 +48,6 @@
         if (mediaFiles.length === 0) return;
         const currentFile = mediaFiles[currentIndex];
         imageElement.src = mediaFolder + encodeURIComponent(currentFile);
-        filenameElement.textContent = currentFile;
       }
 
       function nextSlide() {
@@ -78,15 +55,9 @@
         updateSlideshow();
       }
 
-      function prevSlide() {
-        currentIndex = (currentIndex - 1 + mediaFiles.length) % mediaFiles.length;
-        updateSlideshow();
-      }
-
-      // Auto-advance every 20 seconds
       function startAutoAdvance() {
         if (slideshowInterval) clearInterval(slideshowInterval);
-        slideshowInterval = setInterval(nextSlide, 20000);
+        slideshowInterval = setInterval(nextSlide, 20000); // 20 seconds
       }
 
       fetch(mediaFolder + 'media.json')
@@ -101,22 +72,12 @@
           }
           mediaFiles = files;
           updateSlideshow();
-          startAutoAdvance(); // start the timer once images are loaded
+          startAutoAdvance();
         })
         .catch(err => {
           console.error('Error loading media:', err);
           imageElement.alt = 'Error loading media.';
         });
-
-      nextBtn.addEventListener('click', () => {
-        nextSlide();
-        startAutoAdvance(); // reset timer
-      });
-
-      prevBtn.addEventListener('click', () => {
-        prevSlide();
-        startAutoAdvance(); // reset timer
-      });
     });
   </script>
 </body>
